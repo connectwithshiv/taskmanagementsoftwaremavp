@@ -524,3 +524,251 @@ const TaskService = {
 };
 
 export default TaskService;
+// // Updated: services/taskService.js - Add these changes to your existing TaskService
+
+// // Add at the top with other constants
+// export const TASK_STATUS = {
+//   PENDING: 'pending',
+//   IN_PROGRESS: 'in-progress',
+//   COMPLETED: 'completed',
+//   CANCELLED: 'cancelled'
+// };
+
+// export const TASK_PRIORITY = {
+//   LOW: 'low',
+//   MEDIUM: 'medium',
+//   HIGH: 'high',
+//   URGENT: 'urgent'
+// };
+
+// // ==========================================
+// // IN createTask FUNCTION - UPDATE TO INCLUDE:
+// // ==========================================
+
+// createTask: (taskData) => {
+//   try {
+//     const now = new Date().toISOString();
+    
+//     if (!taskData.assignedToName && taskData.assignedTo) {
+//       console.warn('assignedToName missing for task creation. assignedTo:', taskData.assignedTo);
+//     }
+    
+//     const newTask = {
+//       id: `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+//       title: taskData.title,
+//       description: taskData.description || '',
+//       categoryId: taskData.categoryId,
+//       categoryPath: taskData.categoryPath || '',
+//       assignedTo: taskData.assignedTo,
+//       assignedToName: taskData.assignedToName || '',
+//       priority: taskData.priority || TASK_PRIORITY.MEDIUM,
+//       status: taskData.status || TASK_STATUS.PENDING,
+//       dueDate: taskData.dueDate || null,
+//       startDate: taskData.startDate || null,
+//       completedDate: null,
+//       estimatedHours: taskData.estimatedHours || null,
+//       actualHours: taskData.actualHours || null,
+//       tags: taskData.tags || [],
+//       attachments: taskData.attachments || [],
+//       comments: taskData.comments || [],
+      
+//       // ==========================================
+//       // NEW: Worksheet fields
+//       // ==========================================
+//       hasWorksheet: taskData.hasWorksheet || false,
+//       worksheetTemplateId: taskData.worksheetTemplateId || null,
+//       worksheetSubmissions: [],  // Will store submission IDs
+      
+//       createdAt: now,
+//       updatedAt: now,
+//       createdBy: taskData.createdBy || 'system',
+//       updatedBy: taskData.createdBy || 'system',
+//       logs: [{
+//         action: 'created',
+//         timestamp: now,
+//         performedBy: taskData.createdBy || 'system',
+//         details: `Task created${taskData.hasWorksheet ? ' with worksheet template' : ''}`
+//       }]
+//     };
+
+//     tasks.push(newTask);
+//     saveTasks();
+    
+//     console.log('✅ Task created:', {
+//       title: newTask.title,
+//       assignedTo: newTask.assignedTo,
+//       assignedToName: newTask.assignedToName,
+//       hasWorksheet: newTask.hasWorksheet,
+//       worksheetTemplate: newTask.worksheetTemplateId
+//     });
+    
+//     return { 
+//       success: true, 
+//       task: newTask,
+//       message: 'Task created successfully' 
+//     };
+//   } catch (error) {
+//     console.error('Error creating task:', error);
+//     return { 
+//       success: false, 
+//       message: error.message 
+//     };
+//   }
+// },
+
+// // ==========================================
+// // IN updateTask FUNCTION - UPDATE TO INCLUDE:
+// // ==========================================
+
+// updateTask: (taskId, updateData) => {
+//   try {
+//     const taskIndex = tasks.findIndex(t => t.id === taskId);
+    
+//     if (taskIndex === -1) {
+//       return { 
+//         success: false, 
+//         message: 'Task not found' 
+//       };
+//     }
+
+//     const now = new Date().toISOString();
+//     const oldTask = tasks[taskIndex];
+    
+//     const finalUpdateData = { ...updateData };
+//     if (finalUpdateData.assignedTo && !finalUpdateData.assignedToName) {
+//       finalUpdateData.assignedToName = oldTask.assignedToName || '';
+//     }
+    
+//     const updatedTask = {
+//       ...oldTask,
+//       ...finalUpdateData,
+//       id: taskId,
+      
+//       // ==========================================
+//       // PRESERVE Worksheet fields if not updating them
+//       // ==========================================
+//       hasWorksheet: finalUpdateData.hasWorksheet !== undefined 
+//         ? finalUpdateData.hasWorksheet 
+//         : oldTask.hasWorksheet,
+//       worksheetTemplateId: finalUpdateData.worksheetTemplateId !== undefined 
+//         ? finalUpdateData.worksheetTemplateId 
+//         : oldTask.worksheetTemplateId,
+//       worksheetSubmissions: finalUpdateData.worksheetSubmissions || oldTask.worksheetSubmissions || [],
+      
+//       updatedAt: now,
+//       updatedBy: updateData.updatedBy || 'system',
+//       logs: [
+//         ...(oldTask.logs || []),
+//         {
+//           action: 'updated',
+//           timestamp: now,
+//           performedBy: updateData.updatedBy || 'system',
+//           details: 'Task information updated'
+//         }
+//       ]
+//     };
+
+//     tasks[taskIndex] = updatedTask;
+//     saveTasks();
+    
+//     return { 
+//       success: true, 
+//       task: updatedTask,
+//       message: 'Task updated successfully' 
+//     };
+//   } catch (error) {
+//     console.error('Error updating task:', error);
+//     return { 
+//       success: false, 
+//       message: error.message 
+//     };
+//   }
+// },
+
+// // ==========================================
+// // NEW HELPER METHODS
+// // ==========================================
+
+// /**
+//  * Add worksheet submission ID to task
+//  */
+// addWorksheetSubmission: (taskId, submissionId) => {
+//   try {
+//     const taskIndex = tasks.findIndex(t => t.id === taskId);
+    
+//     if (taskIndex === -1) {
+//       return { success: false, message: 'Task not found' };
+//     }
+
+//     const task = tasks[taskIndex];
+    
+//     // Add submission ID if not already present
+//     if (!task.worksheetSubmissions) {
+//       task.worksheetSubmissions = [];
+//     }
+    
+//     if (!task.worksheetSubmissions.includes(submissionId)) {
+//       task.worksheetSubmissions.push(submissionId);
+//       task.updatedAt = new Date().toISOString();
+      
+//       saveTasks();
+      
+//       console.log('✅ Worksheet submission added to task:', submissionId);
+//     }
+    
+//     return { success: true, message: 'Submission added' };
+//   } catch (error) {
+//     console.error('Error adding worksheet submission:', error);
+//     return { success: false, message: error.message };
+//   }
+// },
+
+// /**
+//  * Get tasks with worksheets
+//  */
+// getTasksWithWorksheets: () => {
+//   return tasks.filter(t => t.hasWorksheet === true && t.worksheetTemplateId);
+// },
+
+// /**
+//  * Get tasks without worksheets
+//  */
+// getTasksWithoutWorksheets: () => {
+//   return tasks.filter(t => !t.hasWorksheet || !t.worksheetTemplateId);
+// },
+
+// /**
+//  * Get task worksheet info
+//  */
+// getTaskWorksheetInfo: (taskId) => {
+//   const task = tasks.find(t => t.id === taskId);
+  
+//   if (!task) {
+//     return null;
+//   }
+  
+//   return {
+//     taskId: task.id,
+//     taskTitle: task.title,
+//     hasWorksheet: task.hasWorksheet,
+//     worksheetTemplateId: task.worksheetTemplateId,
+//     submissionCount: task.worksheetSubmissions?.length || 0,
+//     submissions: task.worksheetSubmissions || []
+//   };
+// },
+
+// /**
+//  * Check if task has worksheet template
+//  */
+// hasWorksheetTemplate: (taskId) => {
+//   const task = tasks.find(t => t.id === taskId);
+//   return task && task.hasWorksheet && task.worksheetTemplateId;
+// },
+
+// /**
+//  * Get worksheet submission IDs for task
+//  */
+// getWorksheetSubmissions: (taskId) => {
+//   const task = tasks.find(t => t.id === taskId);
+//   return task?.worksheetSubmissions || [];
+// };
