@@ -11,6 +11,16 @@ import {
   MdHistory,
   MdSupervisorAccount
 } from 'react-icons/md';
+import { 
+  Plus, 
+  Search, 
+  Filter, 
+  Users, 
+  UserPlus, 
+  Settings, 
+  BarChart3, 
+  History
+} from 'lucide-react';
 import { useUser } from '../hooks/useUser';
 import UserForm from '../components/user/UserForm';
 import UserList from '../components/user/UserList';
@@ -151,17 +161,49 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
   }
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
+    <div className={`min-h-screen p-6 ${
+      isDarkMode 
+        ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' 
+        : 'bg-gradient-to-br from-blue-50 via-white to-purple-50'
+    }`}>
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className={`text-3xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            User Management
-          </h1>
-          <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            Manage system users, roles, positions, and access permissions
-          </p>
-        </div>
+        <div className={`rounded-2xl shadow-xl border overflow-hidden mb-8 ${
+          isDarkMode 
+            ? 'bg-slate-800 border-slate-700' 
+            : 'bg-white border-gray-100'
+        }`}>
+          {/* Header Background */}
+          <div className={`px-8 py-6 ${
+            isDarkMode 
+              ? 'bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700' 
+              : 'bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600'
+          }`}>
+            <div className="flex justify-between items-center">
+              <div className="text-white">
+                <h1 className="text-4xl font-bold mb-2">User Management</h1>
+                <p className={`text-lg ${
+                  isDarkMode ? 'text-slate-300' : 'text-blue-100'
+                }`}>
+                  Manage system users, roles, positions, and access permissions
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setActiveTab('add');
+                  setSelectedUser(null);
+                }}
+                className={`flex items-center gap-3 px-8 py-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-semibold ${
+                  isDarkMode 
+                    ? 'bg-slate-700 text-white hover:bg-slate-600' 
+                    : 'bg-white text-blue-600 hover:bg-blue-50'
+                }`}
+              >
+                <Plus size={22} />
+                Add New User
+              </button>
+            </div>
+          </div>
 
         {/* Error Message */}
         {error && (
@@ -170,179 +212,271 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
           </div>
         )}
 
-        // pages/UsersPage.jsx - COMPLETE FIX for Statistics Display
-
-// Replace your statistics cards section with this:
-
-{/* Statistics Cards - FIXED */}
-{stats && (
-  <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-    {/* Total Users */}
-    <div className={`p-4 rounded-lg shadow-sm border ${
-      isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-    }`}>
-      <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-        Total Users
+        {/* Statistics */}
+        {stats && (
+          <div className="p-8">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+              <div className={`group p-6 rounded-xl border hover:shadow-lg transition-all duration-200 hover:-translate-y-1 ${
+                isDarkMode 
+                  ? 'bg-gradient-to-br from-slate-700 to-slate-600 border-slate-600' 
+                  : 'bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-blue-500 rounded-lg">
+                    <Users className="text-white" size={20} />
+                  </div>
+                  <div className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                    isDarkMode 
+                      ? 'text-blue-300 bg-blue-900' 
+                      : 'text-blue-600 bg-blue-200'
+                  }`}>
+                    TOTAL
+                  </div>
+                </div>
+                <div className={`text-sm font-medium mb-1 ${
+                  isDarkMode ? 'text-blue-300' : 'text-blue-600'
+                }`}>
+                  Total Users
+                </div>
+                <div className={`text-3xl font-bold ${
+                  isDarkMode ? 'text-blue-200' : 'text-blue-700'
+                }`}>
+                  {stats.totalUsers || 0}
+                </div>
+              </div>
+              
+              <div className={`group p-6 rounded-xl border hover:shadow-lg transition-all duration-200 hover:-translate-y-1 ${
+                isDarkMode 
+                  ? 'bg-gradient-to-br from-slate-700 to-slate-600 border-slate-600' 
+                  : 'bg-gradient-to-br from-green-50 to-green-100 border-green-200'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-green-500 rounded-lg">
+                    <UserPlus className="text-white" size={20} />
+                  </div>
+                  <div className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                    isDarkMode 
+                      ? 'text-green-300 bg-green-900' 
+                      : 'text-green-600 bg-green-200'
+                  }`}>
+                    ACTIVE
+                  </div>
+                </div>
+                <div className={`text-sm font-medium mb-1 ${
+                  isDarkMode ? 'text-green-300' : 'text-green-600'
+                }`}>
+                  Active Users
+                </div>
+                <div className={`text-3xl font-bold ${
+                  isDarkMode ? 'text-green-200' : 'text-green-700'
+                }`}>
+                  {stats.activeUsers || 0}
+                </div>
+              </div>
+              
+              <div className={`group p-6 rounded-xl border hover:shadow-lg transition-all duration-200 hover:-translate-y-1 ${
+                isDarkMode 
+                  ? 'bg-gradient-to-br from-slate-700 to-slate-600 border-slate-600' 
+                  : 'bg-gradient-to-br from-red-50 to-red-100 border-red-200'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-red-500 rounded-lg">
+                    <Users className="text-white" size={20} />
+                  </div>
+                  <div className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                    isDarkMode 
+                      ? 'text-red-300 bg-red-900' 
+                      : 'text-red-600 bg-red-200'
+                  }`}>
+                    INACTIVE
+                  </div>
+                </div>
+                <div className={`text-sm font-medium mb-1 ${
+                  isDarkMode ? 'text-red-300' : 'text-red-600'
+                }`}>
+                  Inactive Users
+                </div>
+                <div className={`text-3xl font-bold ${
+                  isDarkMode ? 'text-red-200' : 'text-red-700'
+                }`}>
+                  {stats.inactiveUsers || 0}
+                </div>
+              </div>
+              
+              <div className={`group p-6 rounded-xl border hover:shadow-lg transition-all duration-200 hover:-translate-y-1 ${
+                isDarkMode 
+                  ? 'bg-gradient-to-br from-slate-700 to-slate-600 border-slate-600' 
+                  : 'bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-purple-500 rounded-lg">
+                    <Settings className="text-white" size={20} />
+                  </div>
+                  <div className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                    isDarkMode 
+                      ? 'text-purple-300 bg-purple-900' 
+                      : 'text-purple-600 bg-purple-200'
+                  }`}>
+                    ROLES
+                  </div>
+                </div>
+                <div className={`text-sm font-medium mb-1 ${
+                  isDarkMode ? 'text-purple-300' : 'text-purple-600'
+                }`}>
+                  Total Roles
+                </div>
+                <div className={`text-3xl font-bold ${
+                  isDarkMode ? 'text-purple-200' : 'text-purple-700'
+                }`}>
+                  {roles.length || 0}
+                </div>
+              </div>
+              
+              <div className={`group p-6 rounded-xl border hover:shadow-lg transition-all duration-200 hover:-translate-y-1 ${
+                isDarkMode 
+                  ? 'bg-gradient-to-br from-slate-700 to-slate-600 border-slate-600' 
+                  : 'bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-orange-500 rounded-lg">
+                    <BarChart3 className="text-white" size={20} />
+                  </div>
+                  <div className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                    isDarkMode 
+                      ? 'text-orange-300 bg-orange-900' 
+                      : 'text-orange-600 bg-orange-200'
+                  }`}>
+                    POSITIONS
+                  </div>
+                </div>
+                <div className={`text-sm font-medium mb-1 ${
+                  isDarkMode ? 'text-orange-300' : 'text-orange-600'
+                }`}>
+                  Total Positions
+                </div>
+                <div className={`text-3xl font-bold ${
+                  isDarkMode ? 'text-orange-200' : 'text-orange-700'
+                }`}>
+                  {positions.length || 0}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      <div className={`text-2xl font-bold mt-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-        {stats.totalUsers || 0}
-      </div>
-    </div>
-
-    {/* Active Users */}
-    <div className={`p-4 rounded-lg shadow-sm border ${
-      isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-    }`}>
-      <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-        Active
-      </div>
-      <div className={`text-2xl font-bold mt-1 ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>
-        {stats.activeUsers || 0}
-      </div>
-    </div>
-
-    {/* Inactive Users */}
-    <div className={`p-4 rounded-lg shadow-sm border ${
-      isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-    }`}>
-      <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-        Inactive
-      </div>
-      <div className={`text-2xl font-bold mt-1 ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>
-        {stats.inactiveUsers || 0}
-      </div>
-    </div>
-
-    {/* Roles Count */}
-    <div className={`p-4 rounded-lg shadow-sm border ${
-      isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-    }`}>
-      <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-        Roles
-      </div>
-      <div className={`text-2xl font-bold mt-1 ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>
-        {roles.length || 0}
-      </div>
-    </div>
-
-    {/* Positions Count */}
-    <div className={`p-4 rounded-lg shadow-sm border ${
-      isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-    }`}>
-      <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-        Positions
-      </div>
-      <div className={`text-2xl font-bold mt-1 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-        {positions.length || 0}
-      </div>
-    </div>
-  </div>
-)}
 
         {/* Action Tabs */}
-        <div className={`mb-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          <div className="flex items-center gap-1 overflow-x-auto">
-            <button
-              onClick={() => {
-                setActiveTab('list');
-                setSelectedUser(null);
-              }}
-              className={`px-4 py-2.5 font-medium text-sm whitespace-nowrap transition-colors flex items-center gap-2 ${
-                activeTab === 'list'
-                  ? isDarkMode 
-                    ? 'text-blue-400 border-b-2 border-blue-400' 
-                    : 'text-blue-600 border-b-2 border-blue-600'
-                  : isDarkMode 
-                    ? 'text-gray-400 hover:text-white' 
-                    : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <MdPeople size={18} />
-              Users
-            </button>
-           
-            <button
-              onClick={() => {
-                setActiveTab('add');
-                setSelectedUser(null);
-              }}
-              className={`px-4 py-2.5 font-medium text-sm whitespace-nowrap transition-colors flex items-center gap-2 ${
-                activeTab === 'add'
-                  ? isDarkMode 
-                    ? 'text-blue-400 border-b-2 border-blue-400' 
-                    : 'text-blue-600 border-b-2 border-blue-600'
-                  : isDarkMode 
-                    ? 'text-gray-400 hover:text-white' 
-                    : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <MdAdd size={18} />
-              Add User
-            </button>
+        <div className={`rounded-2xl shadow-xl border overflow-hidden mb-8 ${
+          isDarkMode 
+            ? 'bg-slate-800 border-slate-700' 
+            : 'bg-white border-gray-100'
+        }`}>
+          <div className={`p-6 border-b ${
+            isDarkMode ? 'border-slate-700' : 'border-gray-100'
+          }`}>
+            <div className="flex items-center gap-1 overflow-x-auto">
+              <button
+                onClick={() => {
+                  setActiveTab('list');
+                  setSelectedUser(null);
+                }}
+                className={`px-6 py-3 font-medium text-sm whitespace-nowrap transition-all duration-200 flex items-center gap-2 rounded-lg ${
+                  activeTab === 'list'
+                    ? isDarkMode 
+                      ? 'bg-slate-700 text-blue-400 shadow-sm' 
+                      : 'bg-blue-50 text-blue-600 shadow-sm'
+                    : isDarkMode 
+                      ? 'text-slate-300 hover:text-white hover:bg-slate-700' 
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                }`}
+              >
+                <Users size={18} />
+                Users
+              </button>
+             
+              <button
+                onClick={() => {
+                  setActiveTab('add');
+                  setSelectedUser(null);
+                }}
+                className={`px-6 py-3 font-medium text-sm whitespace-nowrap transition-all duration-200 flex items-center gap-2 rounded-lg ${
+                  activeTab === 'add'
+                    ? isDarkMode 
+                      ? 'bg-slate-700 text-blue-400 shadow-sm' 
+                      : 'bg-blue-50 text-blue-600 shadow-sm'
+                    : isDarkMode 
+                      ? 'text-slate-300 hover:text-white hover:bg-slate-700' 
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                }`}
+              >
+                <UserPlus size={18} />
+                Add User
+              </button>
 
-            <button
-              onClick={() => setActiveTab('roles-positions')}
-              className={`px-4 py-2.5 font-medium text-sm whitespace-nowrap transition-colors flex items-center gap-2 ${
-                activeTab === 'roles-positions'
-                  ? isDarkMode 
-                    ? 'text-blue-400 border-b-2 border-blue-400' 
-                    : 'text-blue-600 border-b-2 border-blue-600'
-                  : isDarkMode 
-                    ? 'text-gray-400 hover:text-white' 
-                    : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <MdSupervisorAccount size={18} />
-              Roles & Positions
-            </button>
+              <button
+                onClick={() => setActiveTab('roles-positions')}
+                className={`px-6 py-3 font-medium text-sm whitespace-nowrap transition-all duration-200 flex items-center gap-2 rounded-lg ${
+                  activeTab === 'roles-positions'
+                    ? isDarkMode 
+                      ? 'bg-slate-700 text-blue-400 shadow-sm' 
+                      : 'bg-blue-50 text-blue-600 shadow-sm'
+                    : isDarkMode 
+                      ? 'text-slate-300 hover:text-white hover:bg-slate-700' 
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                }`}
+              >
+                <Settings size={18} />
+                Roles & Positions
+              </button>
 
-            <button
-              onClick={() => setActiveTab('custom-fields')}
-              className={`px-4 py-2.5 font-medium text-sm whitespace-nowrap transition-colors flex items-center gap-2 ${
-                activeTab === 'custom-fields'
-                  ? isDarkMode 
-                    ? 'text-blue-400 border-b-2 border-blue-400' 
-                    : 'text-blue-600 border-b-2 border-blue-600'
-                  : isDarkMode 
-                    ? 'text-gray-400 hover:text-white' 
-                    : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <MdSettings size={18} />
-              Custom Fields
-            </button>
+              <button
+                onClick={() => setActiveTab('custom-fields')}
+                className={`px-6 py-3 font-medium text-sm whitespace-nowrap transition-all duration-200 flex items-center gap-2 rounded-lg ${
+                  activeTab === 'custom-fields'
+                    ? isDarkMode 
+                      ? 'bg-slate-700 text-blue-400 shadow-sm' 
+                      : 'bg-blue-50 text-blue-600 shadow-sm'
+                    : isDarkMode 
+                      ? 'text-slate-300 hover:text-white hover:bg-slate-700' 
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                }`}
+              >
+                <Settings size={18} />
+                Custom Fields
+              </button>
 
-            <button
-              onClick={() => setActiveTab('stats')}
-              className={`px-4 py-2.5 font-medium text-sm whitespace-nowrap transition-colors flex items-center gap-2 ${
-                activeTab === 'stats'
-                  ? isDarkMode 
-                    ? 'text-blue-400 border-b-2 border-blue-400' 
-                    : 'text-blue-600 border-b-2 border-blue-600'
-                  : isDarkMode 
-                    ? 'text-gray-400 hover:text-white' 
-                    : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <MdBarChart size={18} />
-              Statistics
-            </button>
+              <button
+                onClick={() => setActiveTab('stats')}
+                className={`px-6 py-3 font-medium text-sm whitespace-nowrap transition-all duration-200 flex items-center gap-2 rounded-lg ${
+                  activeTab === 'stats'
+                    ? isDarkMode 
+                      ? 'bg-slate-700 text-blue-400 shadow-sm' 
+                      : 'bg-blue-50 text-blue-600 shadow-sm'
+                    : isDarkMode 
+                      ? 'text-slate-300 hover:text-white hover:bg-slate-700' 
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                }`}
+              >
+                <BarChart3 size={18} />
+                Statistics
+              </button>
 
-            <button
-              onClick={() => setActiveTab('history')}
-              className={`px-4 py-2.5 font-medium text-sm whitespace-nowrap transition-colors flex items-center gap-2 ${
-                activeTab === 'history'
-                  ? isDarkMode 
-                    ? 'text-blue-400 border-b-2 border-blue-400' 
-                    : 'text-blue-600 border-b-2 border-blue-600'
-                  : isDarkMode 
-                    ? 'text-gray-400 hover:text-white' 
-                    : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <MdHistory size={18} />
-              Activity
-            </button>
+              <button
+                onClick={() => setActiveTab('history')}
+                className={`px-6 py-3 font-medium text-sm whitespace-nowrap transition-all duration-200 flex items-center gap-2 rounded-lg ${
+                  activeTab === 'history'
+                    ? isDarkMode 
+                      ? 'bg-slate-700 text-blue-400 shadow-sm' 
+                      : 'bg-blue-50 text-blue-600 shadow-sm'
+                    : isDarkMode 
+                      ? 'text-slate-300 hover:text-white hover:bg-slate-700' 
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                }`}
+              >
+                <History size={18} />
+                Activity
+              </button>
+            </div>
           </div>
         </div>
 
@@ -352,77 +486,85 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
           {activeTab === 'list' && (
             <div className="space-y-4">
               {/* Search and Filters */}
-              <div className={`p-4 rounded-lg border ${
-                isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+              <div className={`rounded-2xl shadow-xl border overflow-hidden ${
+                isDarkMode 
+                  ? 'bg-slate-800 border-slate-700' 
+                  : 'bg-white border-gray-100'
               }`}>
-                <div className="flex flex-col lg:flex-row gap-4">
-                  {/* Search Bar */}
-                  <div className="flex-1 relative">
-                    <MdSearch className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
-                      isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                    }`} size={20} />
-                    <input
-                      type="text"
-                      placeholder="Search users by name, email, or ID..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className={`w-full pl-10 pr-4 py-2 border rounded-lg ${
-                        isDarkMode 
-                          ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-                      }`}
-                    />
-                  </div>
+                <div className={`p-6 border-b ${
+                  isDarkMode ? 'border-slate-700' : 'border-gray-100'
+                }`}>
+                  <div className="flex flex-col lg:flex-row gap-4">
+                    {/* Search Bar */}
+                    <div className="flex-1 relative">
+                      <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
+                        isDarkMode ? 'text-slate-400' : 'text-gray-500'
+                      }`} size={20} />
+                      <input
+                        type="text"
+                        placeholder="Search users by name, email, or ID..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className={`w-full pl-10 pr-4 py-3 border rounded-xl transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          isDarkMode 
+                            ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:bg-slate-600' 
+                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:bg-gray-50'
+                        }`}
+                      />
+                    </div>
 
-                  {/* Filter Toggle */}
-                  <button
-                    onClick={() => setShowFilters(!showFilters)}
-                    className={`px-4 py-2 border rounded-lg font-medium flex items-center gap-2 ${
-                      showFilters
-                        ? isDarkMode 
-                          ? 'bg-blue-900/50 border-blue-600 text-blue-300' 
-                          : 'bg-blue-50 border-blue-300 text-blue-700'
-                        : isDarkMode 
-                          ? 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600' 
-                          : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <MdFilterList size={18} />
-                    Filters
-                  </button>
-
-                  {/* Reset Filters */}
-                  {(searchTerm || filters.status !== 'all' || filters.role_id || filters.position_id || filters.assigned_category_ids.length > 0) && (
+                    {/* Filter Toggle */}
                     <button
-                      onClick={resetFilters}
-                      className={`px-4 py-2 border rounded-lg font-medium ${
-                        isDarkMode 
-                          ? 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600' 
-                          : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                      onClick={() => setShowFilters(!showFilters)}
+                      className={`px-6 py-3 border rounded-xl font-medium flex items-center gap-2 transition-all duration-200 ${
+                        showFilters
+                          ? isDarkMode 
+                            ? 'bg-blue-900/50 border-blue-600 text-blue-300' 
+                            : 'bg-blue-50 border-blue-300 text-blue-700'
+                          : isDarkMode 
+                            ? 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600' 
+                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      Reset
+                      <Filter size={18} />
+                      Filters
                     </button>
-                  )}
+
+                    {/* Reset Filters */}
+                    {(searchTerm || filters.status !== 'all' || filters.role_id || filters.position_id || filters.assigned_category_ids.length > 0) && (
+                      <button
+                        onClick={resetFilters}
+                        className={`px-6 py-3 border rounded-xl font-medium transition-all duration-200 ${
+                          isDarkMode 
+                            ? 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600' 
+                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        Reset
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Advanced Filters */}
                 {showFilters && (
-                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className={`p-6 border-t ${
+                    isDarkMode ? 'border-slate-700' : 'border-gray-100'
+                  }`}>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                       {/* Status Filter */}
                       <div>
-                        <label className={`block text-sm font-medium mb-1 ${
-                          isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                        <label className={`block text-sm font-semibold mb-2 ${
+                          isDarkMode ? 'text-slate-300' : 'text-gray-700'
                         }`}>
                           Status
                         </label>
                         <select
                           value={filters.status}
                           onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                          className={`w-full px-3 py-2 border rounded-lg ${
+                          className={`w-full px-4 py-3 border rounded-xl transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             isDarkMode 
-                              ? 'bg-gray-700 border-gray-600 text-white' 
+                              ? 'bg-slate-700 border-slate-600 text-white' 
                               : 'bg-white border-gray-300 text-gray-900'
                           }`}
                         >
@@ -434,17 +576,17 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
 
                       {/* Role Filter */}
                       <div>
-                        <label className={`block text-sm font-medium mb-1 ${
-                          isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                        <label className={`block text-sm font-semibold mb-2 ${
+                          isDarkMode ? 'text-slate-300' : 'text-gray-700'
                         }`}>
                           Role
                         </label>
                         <select
                           value={filters.role_id}
                           onChange={(e) => setFilters({ ...filters, role_id: e.target.value })}
-                          className={`w-full px-3 py-2 border rounded-lg ${
+                          className={`w-full px-4 py-3 border rounded-xl transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             isDarkMode 
-                              ? 'bg-gray-700 border-gray-600 text-white' 
+                              ? 'bg-slate-700 border-slate-600 text-white' 
                               : 'bg-white border-gray-300 text-gray-900'
                           }`}
                         >
@@ -459,17 +601,17 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
 
                       {/* Position Filter */}
                       <div>
-                        <label className={`block text-sm font-medium mb-1 ${
-                          isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                        <label className={`block text-sm font-semibold mb-2 ${
+                          isDarkMode ? 'text-slate-300' : 'text-gray-700'
                         }`}>
                           Position
                         </label>
                         <select
                           value={filters.position_id}
                           onChange={(e) => setFilters({ ...filters, position_id: e.target.value })}
-                          className={`w-full px-3 py-2 border rounded-lg ${
+                          className={`w-full px-4 py-3 border rounded-xl transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             isDarkMode 
-                              ? 'bg-gray-700 border-gray-600 text-white' 
+                              ? 'bg-slate-700 border-slate-600 text-white' 
                               : 'bg-white border-gray-300 text-gray-900'
                           }`}
                         >
@@ -484,8 +626,8 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
 
                       {/* Category Filter */}
                       <div>
-                        <label className={`block text-sm font-medium mb-1 ${
-                          isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                        <label className={`block text-sm font-semibold mb-2 ${
+                          isDarkMode ? 'text-slate-300' : 'text-gray-700'
                         }`}>
                           Categories
                         </label>
@@ -496,9 +638,9 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
                             const values = Array.from(e.target.selectedOptions, option => option.value);
                             setFilters({ ...filters, assigned_category_ids: values });
                           }}
-                          className={`w-full px-3 py-2 border rounded-lg ${
+                          className={`w-full px-4 py-3 border rounded-xl transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             isDarkMode 
-                              ? 'bg-gray-700 border-gray-600 text-white' 
+                              ? 'bg-slate-700 border-slate-600 text-white' 
                               : 'bg-white border-gray-300 text-gray-900'
                           }`}
                           size="3"
@@ -509,8 +651,8 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
                             </option>
                           ))}
                         </select>
-                        <p className={`text-xs mt-1 ${
-                          isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                        <p className={`text-xs mt-2 ${
+                          isDarkMode ? 'text-slate-400' : 'text-gray-500'
                         }`}>
                           Hold Ctrl/Cmd to select multiple
                         </p>
@@ -521,15 +663,21 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
               </div>
 
               {/* Users List */}
-              <UserList
-                users={filteredUsers}
-                roles={roles}
-                positions={positions}
-                categories={categories}
-                onEdit={handleEditUser}
-                onDelete={setConfirmDelete}
-                isDarkMode={isDarkMode}
-              />
+              <div className={`rounded-2xl shadow-xl border overflow-hidden ${
+                isDarkMode 
+                  ? 'bg-slate-800 border-slate-700' 
+                  : 'bg-white border-gray-100'
+              }`}>
+                <UserList
+                  users={filteredUsers}
+                  roles={roles}
+                  positions={positions}
+                  categories={categories}
+                  onEdit={handleEditUser}
+                  onDelete={setConfirmDelete}
+                  isDarkMode={isDarkMode}
+                />
+              </div>
             </div>
           )}
 

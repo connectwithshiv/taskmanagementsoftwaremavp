@@ -151,17 +151,17 @@ const App = () => {
 
     // Categories
     if (currentPage === 'categories') {
-      return <CategoryPage isDarkMode={isDarkMode} />;
+      return <CategoryPage isDarkMode={isDarkMode} onToggleDarkMode={() => setIsDarkMode(!isDarkMode)} />;
     }
 
     // Users - Admin only
     if (currentPage === 'users') {
-      return <UsersPage currentUserId={currentUser?.id} isDarkMode={isDarkMode} />;
+      return <UsersPage currentUserId={currentUser?.id} isDarkMode={isDarkMode} onToggleDarkMode={() => setIsDarkMode(!isDarkMode)} />;
     }
 
     // Tasks - NEW INTEGRATION
     if (currentPage === 'tasks') {
-      return <TaskPage isDarkMode={isDarkMode} />;
+      return <TaskPage isDarkMode={isDarkMode} onToggleDarkMode={() => setIsDarkMode(!isDarkMode)} />;
     }
 
     // User Dependency

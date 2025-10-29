@@ -21,7 +21,8 @@ const TaskCard = ({
   onEdit, 
   onDelete, 
   onStatusChange,
-  showActions = true 
+  showActions = true,
+  isDarkMode = false
 }) => {
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'completed';
   
@@ -49,45 +50,66 @@ const TaskCard = ({
 
   return (
     <div className={`
-      bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-200 p-6
-      ${isOverdue ? 'border-l-4 border-red-500' : ''}
+      group rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 border
+      ${isDarkMode 
+        ? 'bg-slate-800 border-slate-700 hover:border-slate-600' 
+        : 'bg-white border-gray-100 hover:border-blue-200'
+      }
+      ${isOverdue ? 'border-l-4 border-red-500 bg-red-50/30' : ''}
+      hover:-translate-y-1 hover:scale-[1.02]
     `}>
       {/* Header */}
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start mb-5">
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <h3 className="text-xl font-bold text-gray-800">{task.title}</h3>
+          <div className="flex items-center gap-3 mb-3">
+            <h3 className={`text-xl font-bold group-hover:transition-colors duration-200 ${
+              isDarkMode 
+                ? 'text-slate-200 group-hover:text-blue-400' 
+                : 'text-gray-800 group-hover:text-blue-700'
+            }`}>
+              {task.title}
+            </h3>
             {isOverdue && (
-              <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium">
+              <span className="px-3 py-1 bg-red-100 text-red-700 text-xs rounded-full font-semibold animate-pulse">
                 OVERDUE
               </span>
             )}
           </div>
           
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-4">
             <TaskStatusBadge status={task.status} />
             <TaskPriorityBadge priority={task.priority} />
           </div>
           
           {task.description && (
-            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+            <p className={`text-sm mb-4 line-clamp-2 leading-relaxed ${
+              isDarkMode ? 'text-slate-400' : 'text-gray-600'
+            }`}>
               {task.description}
             </p>
           )}
         </div>
         
         {showActions && (
-          <div className="flex gap-2 ml-4">
+          <div className="flex gap-1 ml-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <button
               onClick={() => onEdit && onEdit(task)}
-              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 ${
+                isDarkMode 
+                  ? 'text-blue-400 hover:bg-blue-900/30' 
+                  : 'text-blue-600 hover:bg-blue-50'
+              }`}
               title="Edit Task"
             >
               <Edit2 size={18} />
             </button>
             <button
               onClick={() => onDelete && onDelete(task.id)}
-              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 ${
+                isDarkMode 
+                  ? 'text-red-400 hover:bg-red-900/30' 
+                  : 'text-red-600 hover:bg-red-50'
+              }`}
               title="Delete Task"
             >
               <Trash2 size={18} />
@@ -97,45 +119,85 @@ const TaskCard = ({
       </div>
       
       {/* Task Details */}
-      <div className="grid grid-cols-2 gap-3 text-sm mb-4">
-        <div className="flex items-center gap-2 text-gray-600">
-          <Tag size={16} className="flex-shrink-0" />
-          <span className="truncate" title={task.categoryPath}>
+      <div className="grid grid-cols-2 gap-4 text-sm mb-5">
+        <div className={`flex items-center gap-3 p-3 rounded-lg ${
+          isDarkMode 
+            ? 'text-slate-300 bg-slate-700' 
+            : 'text-gray-600 bg-gray-50'
+        }`}>
+          <div className="p-1.5 bg-blue-100 rounded-md">
+            <Tag size={16} className="text-blue-600" />
+          </div>
+          <span className="truncate font-medium" title={task.categoryPath}>
             {task.categoryPath || 'No Category'}
           </span>
         </div>
         
-        <div className="flex items-center gap-2 text-gray-600">
-          <User size={16} className="flex-shrink-0" />
-          <span className="truncate" title={task.assignedToName}>
+        <div className={`flex items-center gap-3 p-3 rounded-lg ${
+          isDarkMode 
+            ? 'text-slate-300 bg-slate-700' 
+            : 'text-gray-600 bg-gray-50'
+        }`}>
+          <div className="p-1.5 bg-green-100 rounded-md">
+            <User size={16} className="text-green-600" />
+          </div>
+          <span className="truncate font-medium" title={task.assignedToName}>
             {task.assignedToName || 'Unassigned'}
           </span>
         </div>
         
-        <div className={`flex items-center gap-2 ${isOverdue ? 'text-red-600 font-medium' : 'text-gray-600'}`}>
-          <Clock size={16} className="flex-shrink-0" />
-          <span>Due: {formatDate(task.dueDate)}</span>
+        <div className={`flex items-center gap-3 p-3 rounded-lg ${
+          isOverdue 
+            ? isDarkMode 
+              ? 'bg-red-900/30 text-red-400' 
+              : 'bg-red-50 text-red-600'
+            : isDarkMode 
+              ? 'text-slate-300 bg-slate-700' 
+              : 'bg-gray-50 text-gray-600'
+        }`}>
+          <div className={`p-1.5 rounded-md ${
+            isOverdue 
+              ? 'bg-red-100' 
+              : 'bg-orange-100'
+          }`}>
+            <Clock size={16} className={isOverdue ? 'text-red-600' : 'text-orange-600'} />
+          </div>
+          <span className="font-medium">Due: {formatDate(task.dueDate)}</span>
         </div>
         
-        <div className="flex items-center gap-2 text-gray-600">
-          <Calendar size={16} className="flex-shrink-0" />
-          <span>Created: {formatDate(task.createdAt)}</span>
+        <div className={`flex items-center gap-3 p-3 rounded-lg ${
+          isDarkMode 
+            ? 'text-slate-300 bg-slate-700' 
+            : 'text-gray-600 bg-gray-50'
+        }`}>
+          <div className="p-1.5 bg-purple-100 rounded-md">
+            <Calendar size={16} className="text-purple-600" />
+          </div>
+          <span className="font-medium">Created: {formatDate(task.createdAt)}</span>
         </div>
       </div>
 
       {/* Additional Info */}
       {(task.comments?.length > 0 || task.attachments?.length > 0) && (
-        <div className="flex items-center gap-4 text-sm text-gray-500 mb-4 pt-3 border-t">
+        <div className={`flex items-center gap-6 text-sm mb-5 pt-4 border-t ${
+          isDarkMode 
+            ? 'text-slate-400 border-slate-700' 
+            : 'text-gray-500 border-gray-100'
+        }`}>
           {task.comments?.length > 0 && (
-            <div className="flex items-center gap-1">
-              <MessageSquare size={14} />
-              <span>{task.comments.length} {task.comments.length === 1 ? 'comment' : 'comments'}</span>
+            <div className="flex items-center gap-2">
+              <div className="p-1 bg-blue-100 rounded-md">
+                <MessageSquare size={14} className="text-blue-600" />
+              </div>
+              <span className="font-medium">{task.comments.length} {task.comments.length === 1 ? 'comment' : 'comments'}</span>
             </div>
           )}
           {task.attachments?.length > 0 && (
-            <div className="flex items-center gap-1">
-              <Paperclip size={14} />
-              <span>{task.attachments.length} {task.attachments.length === 1 ? 'file' : 'files'}</span>
+            <div className="flex items-center gap-2">
+              <div className="p-1 bg-green-100 rounded-md">
+                <Paperclip size={14} className="text-green-600" />
+              </div>
+              <span className="font-medium">{task.attachments.length} {task.attachments.length === 1 ? 'file' : 'files'}</span>
             </div>
           )}
         </div>
@@ -143,11 +205,13 @@ const TaskCard = ({
       
       {/* Action Buttons */}
       {showActions && task.status !== 'completed' && task.status !== 'cancelled' && (
-        <div className="flex gap-2 pt-4 border-t">
+        <div className={`flex gap-3 pt-4 border-t ${
+          isDarkMode ? 'border-slate-700' : 'border-gray-100'
+        }`}>
           {task.status === 'pending' && (
             <button
               onClick={handleStartTask}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 text-sm font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <PlayCircle size={16} />
               Start Task
@@ -157,7 +221,7 @@ const TaskCard = ({
           {task.status === 'in-progress' && (
             <button
               onClick={handleCompleteTask}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-200 text-sm font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <CheckCircle size={16} />
               Mark Complete
