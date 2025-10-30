@@ -1,4 +1,4 @@
-// pages/UsersPage.jsx - Updated Main Users Management Page
+// pages/UsersPage.jsx - Updated to use HierarchicalCategoryTree
 
 import React, { useState, useEffect } from 'react';
 import { 
@@ -22,7 +22,7 @@ import {
   History
 } from 'lucide-react';
 import { useUser } from '../hooks/useUser';
-import UserForm from '../components/user/UserForm';
+import HierarchicalCategoryTree from '../components/user/UserForm'; // ✅ Changed from UserForm
 import UserList from '../components/user/UserList';
 import CustomFieldsManager from '../components/user/CustomFieldsManager';
 import RolePositionManager from '../components/user/RolePositionManager';
@@ -37,7 +37,7 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
     roles,
     positions,
     userFields,
-    categories, // Now loaded from UserService
+    categories,
     loading,
     error,
     createUser,
@@ -64,7 +64,7 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
     status: 'all',
     role_id: '',
     position_id: '',
-    assigned_category_ids: [] // Changed to array for multiple categories
+    assigned_category_ids: []
   });
   const [showFilters, setShowFilters] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null);
@@ -82,6 +82,12 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
     ...filters,
     status: filters.status === 'all' ? '' : filters.status
   });
+
+  // ✅ Format categories for the hierarchical tree
+  const formattedCategories = categories.map(cat => ({
+    ...cat,
+    fullPath: cat.fullPath || cat.name // Ensure fullPath exists
+  }));
 
   // Handlers
   const handleCreateUser = async (userData) => {
@@ -141,7 +147,6 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
     });
   };
 
-  // Helper function to get category names from IDs
   const getCategoryNames = (categoryIds) => {
     if (!categoryIds || categoryIds.length === 0) return 'N/A';
     return categoryIds
@@ -645,7 +650,7 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
                           }`}
                           size="3"
                         >
-                          {categories.map(category => (
+                          {formattedCategories.map(category => (
                             <option key={category.id} value={category.id}>
                               ID: {category.id} - {category.name}
                             </option>
@@ -672,7 +677,7 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
                   users={filteredUsers}
                   roles={roles}
                   positions={positions}
-                  categories={categories}
+                  categories={formattedCategories}
                   onEdit={handleEditUser}
                   onDelete={setConfirmDelete}
                   isDarkMode={isDarkMode}
@@ -681,13 +686,13 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
             </div>
           )}
 
-          {/* Add User Tab */}
+          {/* ✅ Updated: Add/Edit User Tab with HierarchicalCategoryTree */}
           {(activeTab === 'add' || activeTab === 'edit') && (
-            <UserForm
+            <HierarchicalCategoryTree
               user={selectedUser}
               roles={roles}
               positions={positions}
-              categories={categories}
+              categories={formattedCategories}
               userFields={userFields}
               onSubmit={selectedUser ? handleUpdateUser : handleCreateUser}
               onCancel={() => {
@@ -719,7 +724,7 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
               userFields={userFields}
               onAdd={addUserField}
               onUpdate={updateUserField}
-              onDelete={deleteUserField}
+              onDelete={setConfirmDeleteField}
               isDarkMode={isDarkMode}
             />
           )}
@@ -729,24 +734,24 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
             <div className="space-y-6">
               {/* Role Distribution */}
               <div className={`rounded-lg shadow-sm border p-6 ${
-                isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'
               }`}>
                 <h3 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   Users by Role
                 </h3>
                 <div className="space-y-3">
-                  {stats.byRole?.map(role => (
+                  {stats.usersByRole?.map(role => (
                     <div key={role.role_id} className="flex items-center justify-between">
                       <span className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>
                         {role.role_name}
                       </span>
                       <div className="flex items-center gap-2">
                         <div className={`w-32 rounded-full h-2 ${
-                          isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
+                          isDarkMode ? 'bg-slate-700' : 'bg-gray-200'
                         }`}>
                           <div
                             className="bg-blue-600 h-2 rounded-full"
-                            style={{ width: `${(role.count / stats.total) * 100}%` }}
+                            style={{ width: `${(role.count / (stats.totalUsers || 1)) * 100}%` }}
                           />
                         </div>
                         <span className={`text-sm w-12 text-right ${
@@ -762,24 +767,24 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
 
               {/* Position Distribution */}
               <div className={`rounded-lg shadow-sm border p-6 ${
-                isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'
               }`}>
                 <h3 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   Users by Position
                 </h3>
                 <div className="space-y-3">
-                  {stats.byPosition?.map(position => (
-                    <div key={position.position_id} className="flex items-center justify-between">
+                  {stats.usersByRole?.map(position => (
+                    <div key={position.role_id} className="flex items-center justify-between">
                       <span className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>
-                        {position.position_name}
+                        {position.role_name}
                       </span>
                       <div className="flex items-center gap-2">
                         <div className={`w-32 rounded-full h-2 ${
-                          isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
+                          isDarkMode ? 'bg-slate-700' : 'bg-gray-200'
                         }`}>
                           <div
                             className="bg-green-600 h-2 rounded-full"
-                            style={{ width: `${(position.count / stats.total) * 100}%` }}
+                            style={{ width: `${(position.count / (stats.totalUsers || 1)) * 100}%` }}
                           />
                         </div>
                         <span className={`text-sm w-12 text-right ${
@@ -792,46 +797,13 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
                   )) || <p className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>No position data available</p>}
                 </div>
               </div>
-
-              {/* Category Distribution */}
-              <div className={`rounded-lg shadow-sm border p-6 ${
-                isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-              }`}>
-                <h3 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Users by Category
-                </h3>
-                <div className="space-y-3">
-                  {stats.byCategory?.map(category => (
-                    <div key={category.id} className="flex items-center justify-between">
-                      <span className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>
-                        ID: {category.id} - {categories.find(cat => cat.id === category.id)?.name || 'Unknown'}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <div className={`w-32 rounded-full h-2 ${
-                          isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
-                        }`}>
-                          <div
-                            className="bg-purple-600 h-2 rounded-full"
-                            style={{ width: `${(category.count / stats.total) * 100}%` }}
-                          />
-                        </div>
-                        <span className={`text-sm w-12 text-right ${
-                          isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                        }`}>
-                          {category.count}
-                        </span>
-                      </div>
-                    </div>
-                  )) || <p className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>No category data available</p>}
-                </div>
-              </div>
             </div>
           )}
 
           {/* Activity Logs Tab */}
           {activeTab === 'history' && (
             <div className={`rounded-lg shadow-sm border ${
-              isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+              isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'
             }`}>
               <div className="p-6">
                 <h2 className={`text-xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -841,7 +813,7 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
                   {users.slice(0, 10).map(user => (
                     user.logs && user.logs.length > 0 ? (
                       <div key={user.user_id} className={`p-3 rounded-lg ${
-                        isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                        isDarkMode ? 'bg-slate-700' : 'bg-gray-50'
                       }`}>
                         <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                           {user.username}
@@ -868,7 +840,7 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
           )}
         </div>
 
-        {/* Delete Confirmation Modal */}
+        {/* Delete User Confirmation Modal */}
         {confirmDelete && (
           <ConfirmModal
             isOpen={true}
@@ -878,6 +850,7 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
             message={`Are you sure you want to delete user "${confirmDelete.username}"? This action cannot be undone.`}
             confirmText="Delete"
             confirmStyle="danger"
+            isDarkMode={isDarkMode}
           />
         )}
 
@@ -891,6 +864,7 @@ const UsersPage = ({ currentUserId = 'admin', isDarkMode = false }) => {
             message={`Are you sure you want to delete field "${confirmDeleteField.field_name}"? This will also remove all values for this field.`}
             confirmText="Delete"
             confirmStyle="danger"
+            isDarkMode={isDarkMode}
           />
         )}
       </div>
